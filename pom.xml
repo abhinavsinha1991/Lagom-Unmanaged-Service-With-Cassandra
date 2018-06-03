@@ -1,15 +1,15 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.example.hello</groupId>
-    <artifactId>my-first-program</artifactId>
+    <artifactId>lagom-unmanged-cassandra</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
     <modules>
         <module>external-api</module>
-        <module>user-api</module>
-        <module>user-impl</module>
+        <module>components-api</module>
+        <module>components-impl</module>
     </modules>
 
     <build>
