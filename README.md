@@ -2,7 +2,7 @@
 
 # Overview
 
-  This coding challenge involves the development of a simple service that responds to a GET request, queries the DigitalOcean (DO) API, performs simple data transformations on the data received from DO, saves the data to a database, and finally sends a response.
+  This coding challenge involves the development of a simple service that responds to a GET request, queries the DigitalOcean (DO) API, performs simple data transformations on the data received from DO, saves the data to a database(here,Cassandra), and finally sends a response.
 
 # Documentation for DO API:
 
