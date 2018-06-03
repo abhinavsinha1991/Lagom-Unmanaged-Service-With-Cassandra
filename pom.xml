@@ -1,6 +1,6 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.example.hello</groupId>
+    <groupId>com.abhinav</groupId>
     <artifactId>lagom-unmanged-cassandra</artifactId>
     <version>1.0-SNAPSHOT</version>
 
@@ -27,6 +27,7 @@
                     <cassandraEnabled>false</cassandraEnabled>
                     <unmanagedServices>
                         <cas_native>http://localhost:9042</cas_native>
+                        <external-service>https://s2k7tnzlhrpw.statuspage.io</external-service>
                     </unmanagedServices>
                 </configuration>
             </plugin>
@@ -40,17 +41,6 @@
                     <compilerArgs>
                         <arg>-parameters</arg>
                     </compilerArgs>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>com.lightbend.lagom</groupId>
-                <artifactId>lagom-maven-plugin</artifactId>
-                <version>${lagom.version}</version>
-                <configuration>
-                    <unmanagedServices>
-                        <external-service>https://s2k7tnzlhrpw.statuspage.io</external-service>
-                    </unmanagedServices>
                 </configuration>
             </plugin>
 

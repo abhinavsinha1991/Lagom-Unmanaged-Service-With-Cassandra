@@ -1,29 +1,29 @@
-package com.example.hello.user.impl.UnitTest;
+package com.abhinav.lagom.unmanged.ComponentTest;
 
 import akka.NotUsed;
+import com.abhinav.lagom.unmanaged.api.ComponentsService;
 import com.abhinav.lagom.unmanaged.external.api.DigitalOceanService;
 import com.abhinav.lagom.unmanaged.external.models.ComponentData;
 import com.abhinav.lagom.unmanaged.external.models.Components;
 import com.abhinav.lagom.unmanaged.external.models.Page;
-import com.abhinav.lagom.unmanaged.impl.ComponentsServiceImpl;
-import com.abhinav.lagom.unmanaged.mapper.ResponseMapper;
 import com.abhinav.lagom.unmanaged.models.ComponentsResponse;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Tested;
+import com.lightbend.lagom.javadsl.testkit.ServiceTest;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
+import static com.lightbend.lagom.javadsl.testkit.ServiceTest.*;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
 
-public class ComponentsServiceImplTest {
+public class ComponentsServiceImplCompTest extends Mockito {
 
     private static final String ID = "1";
     private static final Integer COUNT = 1;
@@ -41,25 +41,25 @@ public class ComponentsServiceImplTest {
     private static Components newComponents = new Components() {
         {
             setStatus("");
-    
+            
             setName("");
-    
+            
             setCreated_at("");
             
             setUpdated_at("");
-    
+            
             setPosition(1);
-    
+            
             setDescription("");
-    
+            
             setShowcase(false);
-    
+            
             setId(ID);
-    
+            
             setPage_id("");
-    
+            
             setGroup_id("");
-    
+            
             setComposite_id("");
             
         }
@@ -71,51 +71,50 @@ public class ComponentsServiceImplTest {
             setComponents(componentsList);
         }
     };
+    
+    private static ComponentsService service;
+    private static ServiceTest.TestServer server;
+    private static ServiceTest.Setup setup = defaultSetup()
+            .withCassandra(true)
+            .withCluster(false)
+            .withConfigureBuilder(b -> b.overrides
+                    (bind(DigitalOceanService.class).to(ExternalStub.class)));
 
-    @SuppressWarnings("unused")
-    @Tested
-    private ComponentsServiceImpl componentServiceImpl;
+    @BeforeClass
+    public static void setup() {
 
-    @SuppressWarnings("unused")
-    @Injectable
-    private DigitalOceanService digitalOceanService;
+        server = startServer(setup);
+        service = server.client(ComponentsService.class);
+    
+        componentsList.add(newComponents);
 
-    @SuppressWarnings("unused")
-    @Injectable
-    private ResponseMapper responseMapper;
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        if (server != null) {
+            server.stop();
+            server = null;
+        }
+    }
 
     @Test
-    public void getComponentsTest() throws Exception {
-        new Expectations() {
-            {
-                digitalOceanService.getComponents();
-
-                result = new ServiceCall<NotUsed, ComponentData>() {
-                    @Override
-                    public CompletionStage<ComponentData> invoke(NotUsed notUsed) {
-                        return CompletableFuture.completedFuture(newComponentData);
-                    }
-                };
-            }
-
-            {
-                responseMapper.getResponse(componentsList);
-                
-                result = new ComponentsResponse() {
-                    {
-                        setComponents("Total components found was " + newComponentData.getComponents().size());
-                    }
-                };
-            }
-        };
-        
-        ComponentsResponse receivedResponse = componentServiceImpl
+    public void shouldGetUserData() throws Exception {
+        ComponentsResponse receivedResponse = service
                 .getComponents(Optional.of(""))
                 .invoke()
-                .toCompletableFuture().get(5, SECONDS);
+                .toCompletableFuture().get(10, SECONDS);
 
-        System.out.println(receivedResponse);
         assertEquals("getComponents method fails ", "Total components found was" +COUNT , receivedResponse.getComponents());
+
+    }
+
+    static class ExternalStub implements DigitalOceanService {
+
+        @Override
+        public ServiceCall<NotUsed, ComponentData> getComponents() {
+            return request -> CompletableFuture.completedFuture(newComponentData);
+        }
     }
 
 }
