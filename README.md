@@ -82,3 +82,13 @@ Send a response that includes the number of component records saved to the datab
 	components: #count of the components saved#
 
 }
+
+## Cassandra Schema
+
+CREATE TABLE comp_data.comps (
+    composite_id text,
+    status text,
+    name text,
+    PRIMARY KEY ((composite_id, status), name)
+) WITH CLUSTERING ORDER BY (name ASC)
+
